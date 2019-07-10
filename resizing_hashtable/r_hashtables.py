@@ -17,14 +17,18 @@ class LinkedPair:
 # '''
 class HashTable:
     def __init__(self, capacity):
-        pass
+        self.capacity = capacity
+        self.storage = [None] * capacity
 
 
 # '''
 # Research and implement the djb2 hash function
 # '''
 def hash(string, max):
-    pass
+    hash = 5381
+    for x in string:
+        hash = ((hash << 5) + hash) + ord(x)
+    return (hash % max) & 0xFFFFFFFF
 
 
 # '''
@@ -33,7 +37,16 @@ def hash(string, max):
 # Hint: Used the LL to handle collisions
 # '''
 def hash_table_insert(hash_table, key, value):
-    pass
+    new_val = LinkedPair(key, value)
+    index = hash(key, hash_table.capacity)
+    if hash_table.storage[index] is None:
+        hash_table.storage[index] = new_val
+        return new_val
+    curr = hash_table.storage[index]
+    while curr.next:
+        curr = curr.next
+    curr.next = new_val
+    return new_val
 
 
 # '''
@@ -41,8 +54,19 @@ def hash_table_insert(hash_table, key, value):
 
 # If you try to remove a value that isn't there, print a warning.
 # '''
+# 1 -> 2 -> 3 -> 4 -> 5
 def hash_table_remove(hash_table, key):
-    pass
+    index = hash(key, hash_table.capacity)
+    if hash_table.storage[index] is None:
+        raise IndexError("Invalid key")
+    curr = hash_table.storage[index]
+    prev = None
+    while curr:
+        if curr.key == key:
+            prev.next = curr.next
+            curr.next = None
+        prev = curr
+        curr = curr.next
 
 
 # '''
@@ -51,14 +75,26 @@ def hash_table_remove(hash_table, key):
 # Should return None if the key is not found.
 # '''
 def hash_table_retrieve(hash_table, key):
-    pass
+    index = hash(key, hash_table.capacity)
+    if hash_table.storage[index] is None:
+        raise IndexError("Invalid key")
+    curr = hash_table.storage[index]
+    while curr:
+        if curr.key == key:
+            return curr.value
+        curr = curr.next
 
 
 # '''
 # Fill this in
 # '''
 def hash_table_resize(hash_table):
-    pass
+    x = len(hash_table.storage)
+    capacity = x * 2
+    z = HashTable(capacity)
+    for i in range(0, len(hash_table.storage) - 1):
+        z.storage[i] = hash_table.storage[i]
+    return z
 
 
 def Testing():
